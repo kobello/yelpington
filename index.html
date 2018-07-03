@@ -1,15 +1,99 @@
-<script>
-fetch('city-market.md')
-  .then(function(response) {
-    response.text().then((s) => console.log(s));
-  });
+<!DOCTYPE html>
+<html>
 
-fetch('city-market.md')
-  .then(function(response) {
-    return response.text();
-  })
-  .then(function(myText) {
-    console.log(myText);
-  });
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+  <script src="main.js"></script> -->
+</head>
+<style>
+  h1 {
+    color: red;
+  }
 
-</script>
+  #wrapper {
+
+  }
+  h2 {
+
+  }
+  h3 {
+    text-decoration: underline;
+  }
+</style>
+
+<body>
+  <h1></h1>
+  <h2>Address:</h2>
+  <div id="address"></div>
+  <br>
+  <h2>Phone:</h2>
+  <div id="phone"></div>
+  <br>
+  <div id="wrapper">
+    <h2>Hours:</h2>
+    <div id="hours"></div>
+    <br> <h3>Lunch:</h3>
+    <div id="lunch"></div>
+    <div id="weekendLunch"></div>
+    <br> <h3>Dinner:</h3>
+    <div id="dinner"></div>
+    <div id="dinnerFriday"></div>
+    <br> <h3>Weekends and Holidays:</h3>
+    <div id="weekendHolidayLunch"></div>
+    <div id="weekendDinner"></div>
+  </div>
+  <br>
+  <h2>Notes:</h2>
+  <div id="notes"></div>
+  <br>
+  <br>
+<h3>Location:</h3>
+  <br>
+  <!-- <iframe id="inlineFrameExample" title="Inline Frame Example" width="300" height="200" src="https://www.openstreetmap.org/export/embed.html?bbox=-73.21392,44.47576,-73.211120,44.47460&layer=mapnik">
+  </iframe> -->
+
+  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2846.929775462494!2d-73.21491488447533!3d44.47561217910171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cca7af824edfff7%3A0x80dab458502fdeb6!2sThai+Dishes!5e0!3m2!1sen!2sus!4v1530648040891" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+
+  <script>
+
+    let params = new URLSearchParams(document.location.search.slice(1));
+    let name = params.get("name");
+    let data
+
+    // fetch('Thai-Dishes.json')
+    //   .then(function (response) {
+    //     response.text().then((s) => document.querySelector("body").innerHTML = s);
+    //   });
+
+    fetch('thai-dishes.json')
+      .then(function (response) {
+        return response.text();
+      })
+      .then(function (myText) {
+
+        // console.log(myText);
+        data = JSON.parse(myText)
+        document.querySelector('h1').innerHTML = data.name
+
+        document.getElementById('phone').innerHTML = data.phone
+        document.getElementById('address').innerHTML = data.address
+        document.getElementById('hours').innerHTML = data.hours[0]
+        document.getElementById('lunch').innerHTML = data.hours[1]
+        document.getElementById('weekendLunch').innerHTML = data.hours[2]
+        document.getElementById('dinner').innerHTML = data.hours[3]
+        document.getElementById('dinnerFriday').innerHTML = data.hours[4]
+        document.getElementById('weekendHolidayLunch').innerHTML = data.hours[5]
+        document.getElementById('weekendDinner').innerHTML = data.hours[6]
+        document.getElementById('notes').innerHTML = data.notes
+
+      });
+
+  </script>
+
+</body>
+
+</html>
