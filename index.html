@@ -6,12 +6,10 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Yelpington App</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
-  integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
-  crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
-   integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
-   crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+    crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+    crossorigin=""></script>
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
   <script src="main.js"></script> -->
@@ -22,39 +20,98 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <style>
+  #background {
+    background: linear-gradient(red, yellow, green);
+  }
+
+  #home {
+    position: absolute;
+    top: 200px;
+    right: 50px;
+    color: orange;
+    font-size: 70px;
+    text-shadow: 1px 1px black;
+    border: dotted orange;
+    border-radius: 15px;
+    /* margin-left: -70px; */
+    /* margin-right: 25px;   */
+  }
+
+  .button {
+    position: absolute;
+    font: bold 11px Arial;
+    text-decoration: none;
+    background-color: #EEEEEE;
+    color: #333333;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+  }
+
   h1 {
-    color: red;
+    font-size: 72px;
+    -webkit-text-stroke-width: 2px;
+   -webkit-text-stroke-color:black;
+    background: -webkit-linear-gradient(red, yellow, green);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    text-decoration: underline orange;
   }
 
   #mapid {
-    height: 400px;
-    width: 600px;
+    position: absolute;
+    left: 390px;
+  }
+
+  #list {
+    position: absolute;
+    left: 50px;
+    font-family: Cambria;
+    font-weight: bold;
+  }
+
+  .border {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+    background: linear-gradient(red, yellow, green);
+    /* border: solid 2px black;
+    height: 50px;
+    width: 170px; */
   }
 </style>
 
-<body>
-  <a href="/">Home</a>
-  <h1></h1>
-  <div id="list1"></div>
-  <div id="list2"></div>
-  <div id="list3"></div>
-  <div id="list4"></div>
-  <div id="list5"></div>
-  <div id="list6"></div>
-  <div id="list7"></div>
-
+<body id="background">
+  <a href="/" id="home" class="button">Home</a>
+  <h1 id="header"></h1>
+  <div id="mapid"></div>
+  <wrapper id="list">
+    <div id="list1" class="border"></div>
+    <div id="list2" class="border"></div>
+    <div id="list3" class="border"></div>
+    <div id="list4" class="border"></div>
+    <div id="list5" class="border"></div>
+    <div id="list6" class="border"></div>
+    <div id="list7" class="border"></div>
+  </wrapper>
   <div id="address1"></div>
   <br>
   <div id="phone"></div>
   <br>
   <h2 id="hourH"></h2>
+
   <div id="hours"></div>
   <br>
+  <h2 id="notesH"></h2>
   <div id="notes"></div>
   <br>
   <div id="map"></div>
   <div id="mapMarker"></div>
-  <div id="mapid"></div>
+
 
   <script>
 
@@ -63,7 +120,11 @@
     let data;
     let list;
     if (document.location.search == "") {
-      console.log("It worked!")
+
+      let header = document.getElementById("header")
+      header.textContent = "Restaurant Directory"
+
+      // console.log("It worked!")
       fetch('list.json')
         .then(function (response) {
           return response.text();
@@ -71,20 +132,41 @@
         .then(function (myText) {
           resturantList = JSON.parse(myText)
 
-          // for (i=0; i < resturantList.length)
-          document.getElementById("list1").innerHTML = "<a href=/?name=" + resturantList.list1.id + ">" + resturantList.list1.names + "</a>"
+          let borderDiv = document.getElementsByClassName("border")
+          for (i = 0; i < borderDiv.length; i++) {
+            borderDiv[i].setAttribute("style", "border: solid 2px black; height:50px; width:200px;")
+          }
 
-          document.getElementById("list2").innerHTML = "<a href=/?name=" + resturantList.list2.id + ">" + resturantList.list2.names + "</a>"
+          function populateList(listNumber, jsonListNumberID, jsonListNumberNames) { 
+            document.getElementById(listNumber).innerHTML = "<a href=/?name=" + jsonListNumberID + ">" + jsonListNumberNames + "</a>"
+          }
 
-          document.getElementById("list3").innerHTML = "<a href=/?name=" + resturantList.list3.id + ">" + resturantList.list3.names + "</a>"
+        populateList("list1", resturantList.list1.id, resturantList.list1.names)
+        populateList("list2", resturantList.list2.id, resturantList.list2.names)
+        populateList("list3", resturantList.list3.id, resturantList.list3.names)
+        populateList("list4", resturantList.list4.id, resturantList.list4.names)
+        populateList("list5", resturantList.list5.id, resturantList.list5.names)
+        populateList("list6", resturantList.list6.id, resturantList.list6.names)
+        populateList("list7", resturantList.list7.id, resturantList.list7.names)
 
-          document.getElementById("list4").innerHTML = "<a href=/?name=" + resturantList.list4.id + ">" + resturantList.list4.names + "</a>"
+          // document.getElementById("list1").innerHTML = "<a href=/?name=" + jsonListNumber.id + ">" + resturantList.jsonListNumber.names + "</a>"
 
-          document.getElementById("list5").innerHTML = "<a href=/?name=" + resturantList.list5.id + ">" + resturantList.list5.names + "</a>"
+          // document.getElementById("list2").innerHTML = "<a href=/?name=" + resturantList.list2.id + ">" + resturantList.list2.names + "</a>"
 
-          document.getElementById("list6").innerHTML = "<a href=/?name=" + resturantList.list6.id + ">" + resturantList.list6.names + "</a>"
+          // document.getElementById("list3").innerHTML = "<a href=/?name=" + resturantList.list3.id + ">" + resturantList.list3.names + "</a>"
 
-          document.getElementById("list7").innerHTML = "<a href=/?name=" + resturantList.list7.id + ">" + resturantList.list7.names + "</a>"
+          // document.getElementById("list4").innerHTML = "<a href=/?name=" + resturantList.list4.id + ">" + resturantList.list4.names + "</a>"
+
+          // document.getElementById("list5").innerHTML = "<a href=/?name=" + resturantList.list5.id + ">" + resturantList.list5.names + "</a>"
+
+          // document.getElementById("list6").innerHTML = "<a href=/?name=" + resturantList.list6.id + ">" + resturantList.list6.names + "</a>"
+
+          // document.getElementById("list7").innerHTML = "<a href=/?name=" + resturantList.list7.id + ">" + resturantList.list7.names + "</a>"
+
+
+
+          let mapIdDiv = document.getElementById("mapid")
+          mapIdDiv.setAttribute("style", "height:400px; width:600px; border:solid 2px black;");
 
           let mymap = L.map('mapid').setView([44.4775, -73.2128], 15);
 
@@ -142,9 +224,18 @@
           } else {
             document.getElementById('hours').innerHTML = "<h2>Hours: </h2><br>" + data.hours
           }
-          data.notes = marked(data.notes.toString())
-          document.getElementById('notes').innerHTML = "<h2>Notes: </h2><br>" + data.notes
+          if (Array.isArray(data.notes)) {
+            document.getElementById('notesH').textContent = "Notes: "
+            for (let i = 0; i < data.notes.length; i++) {
 
+              document.getElementById('notes').innerHTML += marked(data.notes[i]) + "<br>"
+              // data.notes = marked(data.notes.toString())
+
+            }
+          } else {
+
+            document.getElementById('notes').innerHTML = "<h2>Notes: </h2><br>" + data.notes
+          }
         })
         .then(function () {
 
@@ -164,7 +255,7 @@
               secondBbox = myJSON[0].boundingbox[1]
               thirdBbox = myJSON[0].boundingbox[2]
               fourthBbox = myJSON[0].boundingbox[3]
-              
+
               mark1 = myJSON[0].lat
               mark2 = myJSON[0].lon
 
@@ -175,10 +266,9 @@
         });
     }
     // https://www.openstreetmap.org/?mlat=44.47785&mlon=-73.21284#map=19/44.47785/-73.21284&layers=N
-    
+
   </script>
 
 </body>
 
 </html>
-<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=-73.21386963129045%2C44.47726108966601%2C-73.21181505918504%2C44.47843808493118&layer=mapnik&marker=44.47784959026632%2C-73.21284234523773" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/?mlat="+mark1+"&mlon=mark2+"+mark2+"=19/44.47785/-73.21284&layers=N">View Larger Map</a></small>
