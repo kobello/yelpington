@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Page Title</title>
+  <title>Yelpington App</title>
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
   <script src="main.js"></script> -->
@@ -15,65 +15,107 @@
 </style>
 
 <body>
+  <a href="/">Home</a>
   <h1></h1>
-  <h2>Address:</h2>
-  <div id="address"></div>
+  <div id="list1"></div>
+  <div id="list2"></div>
+  <div id="list3"></div>
+  <div id="list4"></div>
+  <div id="list5"></div>
+  <div id="list6"></div>
+  <div id="list7"></div>
+
+  <div id="address1"></div>
   <br>
-  <h2>Phone:</h2>
   <div id="phone"></div>
   <br>
-  <div id="wrapper">
-    <h2>Hours:</h2>
-    <div id="hours"></div>
-  </div>
+  <h2 id="hourH"></h2>
+  <div id="hours"></div>
   <br>
-  <h2>Notes:</h2>
   <div id="notes"></div>
   <br>
   <br>
-  <h2>Location:</h2>
   <br>
-  <!-- <iframe id="inlineFrameExample" title="Inline Frame Example" width="300" height="200" src="https://www.openstreetmap.org/export/embed.html?bbox=-73.21392,44.47576,-73.211120,44.47460&layer=mapnik">
-  </iframe> -->
-
-  <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2846.929775462494!2d-73.21491488447533!3d44.47561217910171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cca7af824edfff7%3A0x80dab458502fdeb6!2sThai+Dishes!5e0!3m2!1sen!2sus!4v1530648040891" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe> -->
+  <div id="map"></div>
 
   <script>
 
     let params = new URLSearchParams(document.location.search.slice(1));
     let name = params.get("name");
-    let data
+    let data;
+    let list;
+    if (document.location.search == "") {
+      console.log("It worked!")
+      fetch('list.json')
+        .then(function (response) {
+          return response.text();
+        })
+        .then(function (myText) {
+          resturantList = JSON.parse(myText)
 
-    // fetch('Thai-Dishes.json')
-    //   .then(function (response) {
-    //     response.text().then((s) => document.querySelector("body").innerHTML = s);
-    //   });
+          // for (i=0; i < resturantList.length)
+          document.getElementById("list1").innerHTML = "<a href=/?name="+ resturantList.list1.id +">" +resturantList.list1.names+"</a>"
 
-    fetch(name + '.json')
-      .then(function (response) {
-        return response.text();
-      })
-      .then(function (myText) {
+          document.getElementById("list2").innerHTML = "<a href=/?name="+ resturantList.list2.id +">" +resturantList.list2.names+"</a>"
 
-        // console.log(myText);
-        data = JSON.parse(myText)
-        document.querySelector('h1').innerHTML = data.name
+          document.getElementById("list3").innerHTML = "<a href=/?name="+ resturantList.list3.id +">" +resturantList.list3.names+"</a>"
 
-        document.getElementById('phone').innerHTML = data["phone number"]
-        document.getElementById('address').innerHTML = data.address
-        if (Array.isArray(data.hours)) {
-          for (let i = 0; i < data.hours.length; i++) {
+          document.getElementById("list4").innerHTML = "<a href=/?name="+ resturantList.list4.id +">" +resturantList.list4.names+"</a>"
 
-            document.getElementById('hours').innerHTML += data.hours[i] + "<br>"
+          document.getElementById("list5").innerHTML = "<a href=/?name="+ resturantList.list5.id +">" +resturantList.list5.names+"</a>"
 
+          document.getElementById("list6").innerHTML = "<a href=/?name="+ resturantList.list6.id +">" +resturantList.list6.names+"</a>"
+
+          document.getElementById("list7").innerHTML = "<a href=/?name="+ resturantList.list7.id +">" +resturantList.list7.names+"</a>"
+
+        })
+
+    } else {
+      fetch(name + '.json')
+        .then(function (response) {
+          return response.text();
+        })
+        .then(function (myText) {
+
+          data = JSON.parse(myText)
+          document.querySelector('h1').innerHTML = data.name
+          document.getElementById('phone').innerHTML = "<h2>Phone: </h2><br>" + data["phone number"]
+          document.getElementById('address1').innerHTML = "<h2>Address: </h2><br>" + data.address
+          if (Array.isArray(data.hours)) {
+            document.getElementById('hourH').textContent = "Hours: "
+            for (let i = 0; i < data.hours.length; i++) {
+
+              document.getElementById('hours').innerHTML += data.hours[i] + "<br>"
+
+            }
+          } else {
+            document.getElementById('hours').innerHTML = "<h2>Hours: </h2><br>" + data.hours
           }
-        } else {
-          document.getElementById('hours').innerHTML = data.hours
-        }
-        document.getElementById('notes').innerHTML = data.notes
+          document.getElementById('notes').innerHTML = "<h2>Notes: </h2><br>" + data.notes
 
-      });
+        })
+        .then(function () {
 
+          let addressArray = data.address.split(" ")
+
+          let location = addressArray.join("+")
+
+          let url = "https://nominatim.openstreetmap.org/search?q=" + location + "&format=json"
+          fetch(url)
+            .then(function (response) {
+              console.log(url)
+              return response.json();
+            })
+            .then(function (myJSON) {
+              firstBbox = myJSON[0].boundingbox[0]
+              secondBbox = myJSON[0].boundingbox[1]
+              thirdBbox = myJSON[0].boundingbox[2]
+              fourthBbox = myJSON[0].boundingbox[3]
+              document.getElementById("map").innerHTML = "<h2>Location: </h2><br>" + '<iframe id="inlineFrameExample" title="Inline Frame Example" width="300" height="200" src="https://www.openstreetmap.org/export/embed.html?bbox=' + thirdBbox + "," + firstBbox + "," + fourthBbox + "," + secondBbox + '&layer=mapnik"></iframe>'
+            })
+
+        });
+    }
   </script>
 
 </body>
